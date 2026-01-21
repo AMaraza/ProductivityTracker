@@ -3,10 +3,12 @@ document.addEventListener('DOMContentLoaded', function() {
     entryForm.style.display = "none";
     LoadFormData();
     ToggleGoalForm();
+    LoadEntries();
 });
 
 window.addEventListener('beforeunload', function(e) {
     e.preventDefault();
+    SaveEntries();
 })
 
 //DATE HANDLING
@@ -57,6 +59,7 @@ entryForm.addEventListener('submit', function (event) {
     entries.push(newEntry);
     console.log(entries);
     ToggleEntryForm();
+    SaveEntries();
 })
 
 function GetFormObject(formData) {
@@ -92,6 +95,21 @@ function ToggleEntryForm() {
 function SaveFormData() {
     if (formData != undefined) {
         localStorage.setItem('goal', JSON.stringify(GetFormObject(formData)));
+    }
+}
+
+function SaveEntries() {
+    if (entries.length > 0) {
+        localStorage.setItem('entries', JSON.stringify(entries));
+        console.log(entries);
+        console.log(localStorage.getItem('entries'));
+    }    
+}
+
+function LoadEntries() {
+    if (localStorage.getItem('entries') != null) {
+        entries = JSON.parse(localStorage.getItem('entries'));
+        console.log(entries);
     }
 }
 
