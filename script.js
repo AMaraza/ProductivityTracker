@@ -2,8 +2,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     entryForm.style.display = "none";
     LoadFormData();
-    ToggleGoalForm();
     LoadEntries();
+    ToggleGoalForm();
 });
 
 window.addEventListener('beforeunload', function(e) {
@@ -43,23 +43,14 @@ let entries = [];
 entryForm.addEventListener('submit', function (event) {
     event.preventDefault();
     entryFormData = new FormData(entryForm);
+    const formObject = GetFormObject(entryFormData);
 
-    const newEntry = document.createElement('div');
-    const entryName = document.createElement('p');
-    const entryHours = document.createElement('p');
-    const entryObject = GetFormObject(entryFormData);
+    const entryObject = { title: formObject.entrytitle, description: formObject.description, timeHours: formObject.timeentry, timeMinutes: formObject.timeminutes }; 
 
-    entryName.textContent = entryObject.entrytitle;
-    entryHours.textContent = `${entryObject.timeentry}h ${entryObject.timeminutes}m`;
-
-    newEntry.appendChild(entryName);
-    newEntry.appendChild(entryHours);
-
-    document.body.appendChild(newEntry);
-    entries.push(newEntry);
-    console.log(entries);
-    ToggleEntryForm();
+    AppendEntry(entryObject);
+    entries.push(entryObject);
     SaveEntries();
+    ToggleEntryForm();
 })
 
 function GetFormObject(formData) {
@@ -90,6 +81,18 @@ function ToggleEntryForm() {
     }
 }
 
+function AppendEntry(entry) {
+    const newDiv = document.createElement('div');
+    const newName = document.createElement('p');
+    const newTime = document.createElement('p');
+
+    newName.textContent = entry.title;
+    newTime.textContent = `${entry.timeHours}h, ${entry.timeMinutes}m`
+    newDiv.appendChild(newName);
+    newDiv.appendChild(newTime);
+    document.body.appendChild(newDiv);
+}
+
 
 //SAVING AND LOADING
 function SaveFormData() {
@@ -101,15 +104,16 @@ function SaveFormData() {
 function SaveEntries() {
     if (entries.length > 0) {
         localStorage.setItem('entries', JSON.stringify(entries));
-        console.log(entries);
-        console.log(localStorage.getItem('entries'));
     }    
 }
 
 function LoadEntries() {
     if (localStorage.getItem('entries') != null) {
-        entries = JSON.parse(localStorage.getItem('entries'));
-        console.log(entries);
+        const storedEntries = localStorage.getItem('entries');
+        const restoredEntries = JSON.parse(storedEntries);
+        restoredEntries.forEach(entry => {
+            AppendEntry(entry);
+        })
     }
 }
 
@@ -131,7 +135,4 @@ function ResetPage() {
     localStorage.clear();
     formData = undefined;
     ToggleGoalForm();
-    entries.forEach(entry => {
-        document.body.removeChild(entry);
-    })
 }
