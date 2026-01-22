@@ -1,9 +1,17 @@
+//GLOBAL VARS
+let timeWorkedHours = 0;
+let timeWorkedMinutes = 0;
+let goalTimeHours = 0;
+let goalTimeMinutes = 0;
+
 //PAGE LOAD AND UNLOAD
 document.addEventListener('DOMContentLoaded', function() {
     entryForm.style.display = "none";
     LoadFormData();
     LoadEntries();
     ToggleGoalForm();
+    ToggleProgressBar();
+    UpdateProgressPercent();
 });
 
 window.addEventListener('beforeunload', function(e) {
@@ -32,7 +40,15 @@ form.addEventListener('submit', function (event) {
     formData = new FormData(form);
     event.preventDefault();
 
+    const formObject = GetFormObject(formData);
+    const hours = Number(formObject.goaltime);
+    const minutes = Number(formObject.goalminutes);
+
+    goalTimeMinutes = ((hours * 60) + minutes);
+
+    console.log(goalTimeMinutes);
     ToggleGoalForm();
+    ToggleProgressBar();
     SaveFormData();
 })
 
@@ -51,6 +67,11 @@ entryForm.addEventListener('submit', function (event) {
     entries.push(entryObject);
     SaveEntries();
     ToggleEntryForm();
+    const hours = Number(entryObject.timeHours);
+    const minutes = Number(entryObject.timeMinutes);
+
+    timeWorkedMinutes = minutes + (hours * 60);
+    UpdateProgressPercent();
 })
 
 function GetFormObject(formData) {
@@ -85,14 +106,63 @@ function AppendEntry(entry) {
     const newDiv = document.createElement('div');
     const newName = document.createElement('p');
     const newTime = document.createElement('p');
+    const newButton = document.createElement('button');
 
     newName.textContent = entry.title;
     newTime.textContent = `${entry.timeHours}h, ${entry.timeMinutes}m`
+    newButton.textContent = "Trash";
+
+    newButton.onclick = function() {
+        document.body.removeChild(newDiv);
+        const index = entries.indexOf(entry);
+
+        if (index > -1) {
+            entries.splice(index, 1);
+        }
+        SaveEntries();
+    }
+
     newDiv.appendChild(newName);
     newDiv.appendChild(newTime);
+    newDiv.appendChild(newButton);
     document.body.appendChild(newDiv);
 }
 
+//PROGRESS BAR
+function ToggleProgressBar() {
+    const progressBar = document.querySelector('#goal-progress');
+    const goalEntryText = document.querySelector('#goal-entry-text');
+    const progressText = document.querySelector('#current-progress');
+    const timeText = document.querySelector('#time-left');
+
+    if (form.style.display == "block") {
+        progressBar.style.display = "none";
+        progressText.style.display = "none";
+        timeText.style.display = "none";
+    }
+    else {
+        progressBar.style.display = "inline-block";
+        progressText.style.display = "inline-block";
+        timeText.style.display = "inline-block";
+        goalEntryText.textContent = "Your Current Goal Progress";
+    }
+}
+
+function UpdateProgressPercent() {
+    const progressBar = document.querySelector('#goal-progress');
+    const progressText = document.querySelector('#current-progress');
+    const timeText = document.querySelector('#time-left');
+
+    progressText.textContent = `${progressBar.value}%`;
+
+    const remainingMinutes = goalTimeMinutes - timeWorkedMinutes;
+    console.log(remainingMinutes);
+    const hours = Math.floor(remainingMinutes / 60);
+    const minutes = remainingMinutes % 60;
+
+    timeText.textContent = `${hours}h ${minutes}m Remaining`
+
+}
 
 //SAVING AND LOADING
 function SaveFormData() {
@@ -112,6 +182,7 @@ function LoadEntries() {
         const storedEntries = localStorage.getItem('entries');
         const restoredEntries = JSON.parse(storedEntries);
         restoredEntries.forEach(entry => {
+            entries.push(entry);
             AppendEntry(entry);
         })
     }
@@ -135,4 +206,6 @@ function ResetPage() {
     localStorage.clear();
     formData = undefined;
     ToggleGoalForm();
+    ToggleProgressBar();
+    entries = [];
 }
