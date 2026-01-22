@@ -8,8 +8,11 @@
     </head>
     <body>
         <header id="general-info">
-            <h1 id="welcome-message">Welcome </h1>
-            <input id="name" value="User">
+            <div id="welcome-section">
+                <h1 id="welcome-message">Welcome </h1>
+                <input id="name" value="User">
+            </div>
+            <h2 id="days-left">There are x Days Left in the Week</h2>
         </header>
 
         <main>
@@ -21,7 +24,7 @@
                 <label id="project-label" for="project-name">Project Name</label>
                 <input type="text" id="project-name" name="projectname" placeholder="optional">
                 <label id="goal-label" for="goal-time">Goal Time</label>
-                <input type="number" id="goal-time" placeholder="hours" name="goaltime" min="1" required>
+                <input type="number" id="goal-time" placeholder="hours" name="goaltime" min="0" required>
                 <input type="number" id="goal-minutes" placeholder="minutes" name="goalminutes" min="0">
                 <label id="incentive-label" for="incentive-input">Set Incentive</label>
                 <input type="text" id="incentive-input" placeholder="optional" name="incentiveinput">
@@ -42,6 +45,9 @@
             <button id="add-entry" onclick="ToggleEntryForm()">+</button>
 
             <button id="reset-button" onclick="ResetPage()">Reset Page</button>
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <canvas id="bar-graph"></canvas>
         </main>
 
         <script src="script.js"></script>

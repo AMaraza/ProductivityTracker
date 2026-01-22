@@ -3,20 +3,25 @@ let timeWorkedHours = 0;
 let timeWorkedMinutes = 0;
 let goalTimeHours = 0;
 let goalTimeMinutes = 0;
+let dailyTimes = [0, 0, 0, 0, 0, 0, 0];
 
 //PAGE LOAD AND UNLOAD
 document.addEventListener('DOMContentLoaded', function() {
     entryForm.style.display = "none";
     LoadFormData();
     LoadEntries();
+    LoadTime();
     ToggleGoalForm();
     ToggleProgressBar();
     UpdateProgressPercent();
+    const daysText = document.querySelector('#days-left');
+    daysText.textContent = `There are ${6 - GetDate(false)} days left in the week!`;
 });
 
 window.addEventListener('beforeunload', function(e) {
     e.preventDefault();
     SaveEntries();
+    SaveTime();
 })
 
 //DATE HANDLING
@@ -50,6 +55,7 @@ form.addEventListener('submit', function (event) {
     ToggleGoalForm();
     ToggleProgressBar();
     SaveFormData();
+    UpdateProgressPercent();
 })
 
 
@@ -70,8 +76,11 @@ entryForm.addEventListener('submit', function (event) {
     const hours = Number(entryObject.timeHours);
     const minutes = Number(entryObject.timeMinutes);
 
-    timeWorkedMinutes = minutes + (hours * 60);
+    timeWorkedMinutes += minutes + (hours * 60);
     UpdateProgressPercent();
+    dailyTimes[GetDate(false)] += (timeWorkedMinutes / 60);
+    dataChart.update();
+    SaveTime();
 })
 
 function GetFormObject(formData) {
@@ -119,6 +128,10 @@ function AppendEntry(entry) {
         if (index > -1) {
             entries.splice(index, 1);
         }
+        const hours = Number(entry.timeHours);
+        const minutes = Number(entry.timeMinutes);
+        timeWorkedMinutes -= minutes + (hours * 60);
+        UpdateProgressPercent();
         SaveEntries();
     }
 
@@ -159,8 +172,21 @@ function UpdateProgressPercent() {
     console.log(remainingMinutes);
     const hours = Math.floor(remainingMinutes / 60);
     const minutes = remainingMinutes % 60;
+    
+    const goalMinutesNum = Number(goalTimeMinutes);
+    const workMinutesNum = Number(timeWorkedMinutes);
+    const percentage = Math.floor((workMinutesNum / goalMinutesNum) * 100);
 
-    timeText.textContent = `${hours}h ${minutes}m Remaining`
+    if (remainingMinutes > 0) {
+        timeText.textContent = `${hours}h ${minutes}m Remaining`
+        progressText.textContent = `${percentage}%`;
+        progressBar.value = percentage;
+    }
+    else {
+        timeText.textContent = `0h 0m Remaining`
+        progressText.textContent = `100%`;
+        progressBar.value = 100;
+    }
 
 }
 
@@ -175,16 +201,21 @@ function SaveEntries() {
     if (entries.length > 0) {
         localStorage.setItem('entries', JSON.stringify(entries));
     }    
+    else {
+        localStorage.setItem('entries', null);
+    }
 }
 
 function LoadEntries() {
     if (localStorage.getItem('entries') != null) {
         const storedEntries = localStorage.getItem('entries');
         const restoredEntries = JSON.parse(storedEntries);
-        restoredEntries.forEach(entry => {
-            entries.push(entry);
-            AppendEntry(entry);
-        })
+        if (restoredEntries != null) {
+            restoredEntries.forEach(entry => {
+                entries.push(entry);
+                AppendEntry(entry);
+            })
+        }
     }
 }
 
@@ -202,10 +233,48 @@ function LoadFormData() {
     }
 }
 
+function SaveTime() {
+    localStorage.setItem('goalTime', JSON.stringify(goalTimeMinutes))
+    localStorage.setItem('progressTime', JSON.stringify(timeWorkedMinutes));
+    localStorage.setItem('chartTimes', JSON.stringify(dailyTimes));
+}
+
+function LoadTime() {
+    goalTimeMinutes = JSON.parse(localStorage.getItem('goalTime'));
+    timeWorkedMinutes = JSON.parse(localStorage.getItem('progressTime'));
+    dailyTimes = JSON.parse(localStorage.getItem('chartTimes'));
+    console.log(dailyTimes);
+    dataChart.update();
+}
+
 function ResetPage() {
     localStorage.clear();
     formData = undefined;
     ToggleGoalForm();
     ToggleProgressBar();
     entries = [];
+    timeWorkedMinutes = 0;
+    timeWorkedHours = 0;
 }
+
+//BAR CHART WITH CHART.JS
+const ctx = document.getElementById('bar-graph');
+
+const dataChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        datasets: [{
+            label: 'Hours Worked',
+            data: dailyTimes,
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
