@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     UpdateProgressPercent();
     const daysText = document.querySelector('#days-left');
     daysText.textContent = `There are ${6 - GetDate(false)} days left in the week!`;
+    dataChart.update();
 });
 
 window.addEventListener('beforeunload', function(e) {
@@ -77,8 +78,14 @@ entryForm.addEventListener('submit', function (event) {
     const minutes = Number(entryObject.timeMinutes);
 
     timeWorkedMinutes += minutes + (hours * 60);
-    UpdateProgressPercent();
-    dailyTimes[GetDate(false)] += (timeWorkedMinutes / 60);
+    if (timeWorkedMinutes > 0) {
+        UpdateProgressPercent();
+        dailyTimes[GetDate(false)] = (timeWorkedMinutes / 60);
+    }
+    else {
+        dailyTimes[GetDate(false)] = 0;
+    }
+
     dataChart.update();
     SaveTime();
 })
@@ -131,6 +138,8 @@ function AppendEntry(entry) {
         const hours = Number(entry.timeHours);
         const minutes = Number(entry.timeMinutes);
         timeWorkedMinutes -= minutes + (hours * 60);
+        dailyTimes[GetDate(false)] = (timeWorkedMinutes / 60);
+        dataChart.update();
         UpdateProgressPercent();
         SaveEntries();
     }
@@ -236,14 +245,14 @@ function LoadFormData() {
 function SaveTime() {
     localStorage.setItem('goalTime', JSON.stringify(goalTimeMinutes))
     localStorage.setItem('progressTime', JSON.stringify(timeWorkedMinutes));
-    localStorage.setItem('chartTimes', JSON.stringify(dailyTimes));
+    localStorage.setItem('dailyTimes', JSON.stringify(dailyTimes));
 }
 
 function LoadTime() {
     goalTimeMinutes = JSON.parse(localStorage.getItem('goalTime'));
     timeWorkedMinutes = JSON.parse(localStorage.getItem('progressTime'));
-    dailyTimes = JSON.parse(localStorage.getItem('chartTimes'));
-    console.log(dailyTimes);
+    dailyTimes = JSON.parse(localStorage.getItem('dailyTimes'));
+    dataChart.data.datasets[0].data = dailyTimes;
     dataChart.update();
 }
 
@@ -255,6 +264,9 @@ function ResetPage() {
     entries = [];
     timeWorkedMinutes = 0;
     timeWorkedHours = 0;
+    dailyTimes = [0, 0, 0, 0, 0, 0, 0];
+    goalTimeMinutes = 0;
+    goalTimeHours = 0;
 }
 
 //BAR CHART WITH CHART.JS
