@@ -2,9 +2,81 @@
     padding: 0;
     margin: 0;
     box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
 } 
+
+input::-webkit-outer-spin-button,
+input::-webkit-innter-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
 
 header h1 {
     display: inline-block;
 }
 
+@media (min-width: 300px) {
+   #welcome-section {
+       display: flex;
+       justify-content: center;
+       padding: 0.5em;
+   } 
+   #welcome-section #name {
+       padding: 0.3em;
+       font-weight: bold;
+       margin-left: 0.3em;
+       font-size: 1em;
+       width: 40%;
+   }
+   header {
+       text-align: center;
+       border-bottom: 2px solid black;
+       padding: 0.5em 1em 0.5em 1em;
+       margin-bottom: 1em;
+   }
+
+   #goal-entry-text {
+       text-align: center;
+   }
+   .goal-entry-visible {
+       display: flex;
+       flex-direction: column;
+       justify-content: center;
+       align-items: center;
+   }
+   .goal-entry-hidden {
+       display: none;
+   }
+   .goal-entry-visible label {
+       padding-top: 1em;
+       padding-bottom: 0.5em;
+   }
+   .goal-entry-visible input {
+       text-align: center;
+       padding: 1em;
+   }
+   .goal-entry-visible button {
+       margin-top: 1em;
+       padding: 1em;
+   }
+   #time-entry-section {
+       display: flex;
+       flex-wrap: wrap;
+       justify-content: center;
+       align-items: center;
+   }
+   #time-entry-section label {
+       display: block;
+       width: 100%;
+       text-align: center;
+   }
+   #time-entry-section input {
+       width: 20%;
+       text-align: center;
+   }
+}

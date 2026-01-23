@@ -8,6 +8,9 @@ let dailyTimes = [0, 0, 0, 0, 0, 0, 0];
 //PAGE LOAD AND UNLOAD
 document.addEventListener('DOMContentLoaded', function() {
     entryForm.style.display = "none";
+    if (GetDate(false) == 0) {
+        ResetPage();
+    }
     LoadFormData();
     LoadEntries();
     LoadTime();
@@ -15,7 +18,13 @@ document.addEventListener('DOMContentLoaded', function() {
     ToggleProgressBar();
     UpdateProgressPercent();
     const daysText = document.querySelector('#days-left');
-    daysText.textContent = `There are ${6 - GetDate(false)} days left in the week!`;
+    const daysLeft = 6 - GetDate(false);
+    if (daysLeft == 1) {
+        daysText.textContent = `There is 1 day left in the week!`;
+    }
+    else {
+        daysText.textContent = `There are ${daysLeft} days left in the week!`;
+    }
     dataChart.update();
 });
 
@@ -100,10 +109,10 @@ function GetFormObject(formData) {
 function ToggleGoalForm() {
     if (form != null) {
         if (GetDate(false) == 0 || formData == undefined) {
-            form.style.display = "block";
+            form.className = "goal-entry-visible";
         }
         else {
-            form.style.display = "none";
+            form.className = "goal-entry-hidden";
         }
 
     }
@@ -157,10 +166,11 @@ function ToggleProgressBar() {
     const progressText = document.querySelector('#current-progress');
     const timeText = document.querySelector('#time-left');
 
-    if (form.style.display == "block") {
+    if (form.className == "goal-entry-visible") {
         progressBar.style.display = "none";
         progressText.style.display = "none";
         timeText.style.display = "none";
+        goalEntryText.textContent = "You have not yet entered a goal for this week!"
     }
     else {
         progressBar.style.display = "inline-block";

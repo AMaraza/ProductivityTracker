@@ -20,12 +20,14 @@
             <label id="current-progress">0%</label>
             <progress id="goal-progress" value="0" max="100"></progress>
             <label id="time-left">0h 0m Left</label>
-            <form id="goal-entry">
+            <form id="goal-entry" class="goal-entry-visible">
                 <label id="project-label" for="project-name">Project Name</label>
                 <input type="text" id="project-name" name="projectname" placeholder="optional">
-                <label id="goal-label" for="goal-time">Goal Time</label>
-                <input type="number" id="goal-time" placeholder="hours" name="goaltime" min="0" required>
-                <input type="number" id="goal-minutes" placeholder="minutes" name="goalminutes" min="0">
+                <div id="time-entry-section">
+                    <label id="goal-label" for="goal-time">Goal Time (Hours, Minutes)</label>
+                    <input type="number" id="goal-time" placeholder="hours" name="goaltime" min="0">
+                    <input type="number" id="goal-minutes" placeholder="minutes" name="goalminutes" min="0">
+                </div>
                 <label id="incentive-label" for="incentive-input">Set Incentive</label>
                 <input type="text" id="incentive-input" placeholder="optional" name="incentiveinput">
                 <button type="submit" id="submit-button">Submit</button>
