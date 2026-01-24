@@ -61,7 +61,8 @@ form.addEventListener('submit', function (event) {
 
     goalTimeMinutes = ((hours * 60) + minutes);
 
-    console.log(goalTimeMinutes);
+    console.log(formObject);
+    
     ToggleGoalForm();
     ToggleProgressBar();
     SaveFormData();
@@ -165,18 +166,29 @@ function ToggleProgressBar() {
     const goalEntryText = document.querySelector('#goal-entry-text');
     const progressText = document.querySelector('#current-progress');
     const timeText = document.querySelector('#time-left');
+    const incentiveText = document.querySelector('#incentive-text');
+    const formObject = GetFormObject(formData);
 
     if (form.className == "goal-entry-visible") {
         progressBar.style.display = "none";
         progressText.style.display = "none";
         timeText.style.display = "none";
         goalEntryText.textContent = "You have not yet entered a goal for this week!"
+        incentiveText.style.display = "none";
     }
     else {
         progressBar.style.display = "inline-block";
         progressText.style.display = "inline-block";
         timeText.style.display = "inline-block";
         goalEntryText.textContent = "Your Current Goal Progress";
+        if (formObject.projectname.length > 0) {
+            goalEntryText.textContent = `Current ${formObject.projectname} Progress`
+        }
+        if (formObject.incentiveinput.length > 0) {
+            incentiveText.style.display = "block";
+            incentiveText.textContent = `What you're working towards: ${formObject.incentiveinput}`;
+            console.log(formObject.incentiveinput)
+        }
     }
 }
 

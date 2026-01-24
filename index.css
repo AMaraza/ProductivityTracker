@@ -62,7 +62,9 @@ header h1 {
    }
    .goal-entry-visible button {
        margin-top: 1em;
+       margin-bottom: 1em;
        padding: 1em;
+       width: 50%;
    }
    #time-entry-section {
        display: flex;
