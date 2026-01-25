@@ -51,8 +51,7 @@ function GetDate(needString) {
         return today.toLocaleDateString(undefined, options);
     }
     else {
-        //return today.getDay();
-        return 0;
+        return today.getDay();
     }
 }
 
