@@ -56,6 +56,8 @@ input::-webkit-innter-spin-button {
     --button-primary-hover: #3E5964;
     --button-secondary: #E2D7C9;
     --button-secondary-hover: #D5C7B5;
+    --button-border: var(--border);
+    --secondary-button-border: var(--border);
 
     --input-background: #FFFFFF;
     --input-hover: #F0ECE5;
@@ -92,7 +94,7 @@ progress {
 @media (min-width: 300px) {
    #welcome-section {
        display: flex;
-       justify-content: center;
+       justify-content: space-evenly;
        padding: 0.5em;
    } 
    #welcome-section #name {
@@ -107,6 +109,29 @@ progress {
        border-bottom: 2px solid black;
        padding: 0.5em 1em 0.5em 1em;
        margin-bottom: 1em;
+       display: flex;
+       justify-content: space-evenly !important;
+       align-items: center;
+       flex-wrap: wrap;
+       flex-direction: column;
+       width: 100%;
+   }
+   header button {
+       padding: 0.5em;
+       width: 40%;
+       background-color: var(--button-secondary);
+       border: 3px solid var(--secondary-button-border);
+       border-radius: 10px;
+       color: var(--text-primary);
+   }
+   header button:hover {
+       background-color: var(--button-secondary-hover);
+   }
+   #spacer {
+       width: 25%;
+   }
+   #header-buttons {
+       width: 25%;
    }
 
    #goal-entry-text {
@@ -124,16 +149,28 @@ progress {
    .goal-entry-visible label {
        padding-top: 1em;
        padding-bottom: 0.5em;
+       color: var(--text-primary);
    }
    .goal-entry-visible input {
        text-align: center;
        padding: 1em;
+       background-color: var(--input-background);
+       border-radius: 5px;
+       border: 4px solid var(--border);
+       color: var(--text-muted);
    }
    .goal-entry-visible button {
        margin-top: 1em;
        margin-bottom: 1em;
        padding: 1em;
        width: 50%;
+       background-color: var(--button-secondary);
+       color: var(--text-secondary);
+       border: 5px solid var(--secondary-button-border);
+       border-radius: 5px;
+   }
+   .goal-entry-visible button:hover {
+       background-color: var(--button-secondary-hover);
    }
    #time-entry-section {
        display: flex;
@@ -217,6 +254,7 @@ progress {
         border: 4px solid;
         border-color: var(--border);
         color: var(--text-muted);
+        border-radius: 5px;
     }
     .work-entry-visible button {
         margin-top: 1em;
@@ -323,6 +361,7 @@ progress {
         display: flex;
         justify-content: center;
         align-items: center;
+        flex-direction: row;
     }
 
     #work-entries {

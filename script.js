@@ -6,15 +6,22 @@ let goalTimeMinutes = 0;
 let dailyTimes = [0, 0, 0, 0, 0, 0, 0];
 const colors = ["#BB6BD9", "#F2C94C", "#6FCF97", "#56CCF2", "#9B51E0", "#EB5757", "#F2994A"];
 let color = GetColor();
+let sundayReset = false;
 
 //PAGE LOAD AND UNLOAD
 document.addEventListener('DOMContentLoaded', function() {
-    if (GetDate(false) == 0) {
-        //ResetPage();
+    LoadSundayReset();
+    if (GetDate(false) == 0 && !sundayReset) {
+        ResetPage();
+        sundayReset = true;
+    }
+    else if (GetDate(false != 0)) {
+        sundayReset = false;
     }
     LoadFormData();
     LoadEntries();
     LoadTime();
+    dataChart.data.datasets[0].data = dailyTimes;
     ToggleGoalForm();
     ToggleProgressBar();
     UpdateProgressPercent();
@@ -33,6 +40,7 @@ window.addEventListener('beforeunload', function(e) {
     e.preventDefault();
     SaveEntries();
     SaveTime();
+    SaveSundayReset();
 })
 
 //DATE HANDLING
@@ -44,12 +52,21 @@ function GetDate(needString) {
     }
     else {
         //return today.getDay();
-        return 2;
+        return 0;
     }
 }
 
 function GetColor() {
     return colors[GetDate(false)];
+}
+
+//THEME HANDLING
+function ChangeTheme() {
+    const root = document.documentElement;
+    const currentTheme = root.getAttribute('data-theme');
+
+    const nextTheme = currentTheme === "dark" ? "light" : "dark";
+    root.setAttribute('data-theme', nextTheme);
 }
 
 //FORM HANDLING
@@ -93,14 +110,10 @@ entryForm.addEventListener('submit', function (event) {
     const minutes = Number(entryObject.timeMinutes);
 
     timeWorkedMinutes += minutes + (hours * 60);
-    if (timeWorkedMinutes > 0) {
-        UpdateProgressPercent();
-        dailyTimes[GetDate(false)] = (timeWorkedMinutes / 60);
-    }
-    else {
-        dailyTimes[GetDate(false)] = 0;
-    }
+    const day = entryObject.day;
+    dailyTimes[day] += (minutes + (hours * 60)) / 60;
 
+    UpdateProgressPercent();
     dataChart.update();
     SaveTime();
 })
@@ -141,9 +154,9 @@ function AppendEntry(entry) {
     const workEntries = document.querySelector('#work-entries');
 
     newDiv.className = "entry";
-    newDiv.style.backgroundColor = color;
     newTime.textContent = `${entry.timeHours}h, ${entry.timeMinutes}m`
     newButton.textContent = "Trash";
+    newDiv.style.backgroundColor = colors[entry.day];
 
     newButton.onclick = function() {
         workEntries.removeChild(newDiv);
@@ -155,7 +168,10 @@ function AppendEntry(entry) {
         const hours = Number(entry.timeHours);
         const minutes = Number(entry.timeMinutes);
         timeWorkedMinutes -= minutes + (hours * 60);
-        dailyTimes[GetDate(false)] = (timeWorkedMinutes / 60);
+        const removedMinutes = Number(entry.timeMinutes) + (Number(entry.timeHours) * 60);
+        dailyTimes[entry.day] -= removedMinutes / 60;
+        SaveTime();
+
         dataChart.update();
         UpdateProgressPercent();
         SaveEntries();
@@ -194,6 +210,9 @@ function ToggleProgressBar() {
             incentiveText.style.display = "block";
             incentiveText.textContent = `What you're working towards: ${formObject.incentiveinput}`;
             console.log(formObject.incentiveinput)
+        }
+        else {
+            incentiveText.style.display = "none";
         }
     }
 }
@@ -283,13 +302,17 @@ function SaveTime() {
         dailyTimes = [0, 0, 0, 0, 0, 0, 0];
         localStorage.setItem('dailyTimes', JSON.stringify(dailyTimes));
     }
+    dataChart.update();
 }
 
 function LoadTime() {
     goalTimeMinutes = JSON.parse(localStorage.getItem('goalTime'));
     timeWorkedMinutes = JSON.parse(localStorage.getItem('progressTime'));
-    dailyTimes = JSON.parse(localStorage.getItem('dailyTimes'));
-    dataChart.data.datasets[0].data = dailyTimes;
+    stored = JSON.parse(localStorage.getItem('dailyTimes')) || [0, 0, 0, 0, 0, 0, 0];
+    if (stored) {
+        dailyTimes.length = 0;
+        dailyTimes.push(...stored);
+    }
     dataChart.update();
 }
 
@@ -298,12 +321,26 @@ function ResetPage() {
     formData = undefined;
     ToggleGoalForm();
     ToggleProgressBar();
+    const entryNodes = document.querySelectorAll('.entry');
+    const entryParent = document.querySelector('#work-entries');
+    entryNodes.forEach(entry => {
+        entryParent.removeChild(entry);
+    })
     entries = [];
     timeWorkedMinutes = 0;
     timeWorkedHours = 0;
     dailyTimes = [0, 0, 0, 0, 0, 0, 0];
     goalTimeMinutes = 0;
     goalTimeHours = 0;
+    dataChart.data.datasets[0].data = dailyTimes;
+    dataChart.update();
+}
+
+function SaveSundayReset() {
+    localStorage.setItem('sundayreset', JSON.stringify(sundayReset));
+}
+function LoadSundayReset() {
+    sundayReset = JSON.parse(localStorage.getItem('sundayreset'));
 }
 
 //BAR CHART WITH CHART.JS
