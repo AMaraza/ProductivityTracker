@@ -4,12 +4,13 @@ let timeWorkedMinutes = 0;
 let goalTimeHours = 0;
 let goalTimeMinutes = 0;
 let dailyTimes = [0, 0, 0, 0, 0, 0, 0];
+const colors = ["#BB6BD9", "#F2C94C", "#6FCF97", "#56CCF2", "#9B51E0", "#EB5757", "#F2994A"];
+let color = GetColor();
 
 //PAGE LOAD AND UNLOAD
 document.addEventListener('DOMContentLoaded', function() {
-    entryForm.style.display = "none";
     if (GetDate(false) == 0) {
-        ResetPage();
+        //ResetPage();
     }
     LoadFormData();
     LoadEntries();
@@ -42,10 +43,14 @@ function GetDate(needString) {
         return today.toLocaleDateString(undefined, options);
     }
     else {
-        return today.getDay();
+        //return today.getDay();
+        return 2;
     }
 }
 
+function GetColor() {
+    return colors[GetDate(false)];
+}
 
 //FORM HANDLING
 let form = document.getElementById('goal-entry');
@@ -78,7 +83,7 @@ entryForm.addEventListener('submit', function (event) {
     entryFormData = new FormData(entryForm);
     const formObject = GetFormObject(entryFormData);
 
-    const entryObject = { title: formObject.entrytitle, description: formObject.description, timeHours: formObject.timeentry, timeMinutes: formObject.timeminutes }; 
+    const entryObject = { timeHours: formObject.timeentry, timeMinutes: formObject.timeminutes, day: GetDate(false) }; 
 
     AppendEntry(entryObject);
     entries.push(entryObject);
@@ -109,7 +114,7 @@ function GetFormObject(formData) {
 
 function ToggleGoalForm() {
     if (form != null) {
-        if (GetDate(false) == 0 || formData == undefined) {
+        if (formData == undefined) {
             form.className = "goal-entry-visible";
         }
         else {
@@ -120,26 +125,28 @@ function ToggleGoalForm() {
 }
 
 function ToggleEntryForm() {
-    if (entryForm.style.display == "none") {
-        entryForm.style.display = "block";
+    console.log(entryForm.className)
+    if (entryForm.className == "work-entry-visible") {
+        entryForm.className = "work-entry-hidden";
     }
-    else if (entryForm.style.display == "block"){
-        entryForm.style.display = "none";
+    else if (entryForm.className == "work-entry-hidden"){
+        entryForm.className = "work-entry-visible";
     }
 }
 
 function AppendEntry(entry) {
     const newDiv = document.createElement('div');
-    const newName = document.createElement('p');
     const newTime = document.createElement('p');
     const newButton = document.createElement('button');
+    const workEntries = document.querySelector('#work-entries');
 
-    newName.textContent = entry.title;
+    newDiv.className = "entry";
+    newDiv.style.backgroundColor = color;
     newTime.textContent = `${entry.timeHours}h, ${entry.timeMinutes}m`
     newButton.textContent = "Trash";
 
     newButton.onclick = function() {
-        document.body.removeChild(newDiv);
+        workEntries.removeChild(newDiv);
         const index = entries.indexOf(entry);
 
         if (index > -1) {
@@ -154,10 +161,9 @@ function AppendEntry(entry) {
         SaveEntries();
     }
 
-    newDiv.appendChild(newName);
     newDiv.appendChild(newTime);
     newDiv.appendChild(newButton);
-    document.body.appendChild(newDiv);
+    workEntries.appendChild(newDiv);
 }
 
 //PROGRESS BAR
@@ -267,7 +273,16 @@ function LoadFormData() {
 function SaveTime() {
     localStorage.setItem('goalTime', JSON.stringify(goalTimeMinutes))
     localStorage.setItem('progressTime', JSON.stringify(timeWorkedMinutes));
-    localStorage.setItem('dailyTimes', JSON.stringify(dailyTimes));
+    
+    const currentEntries = document.querySelectorAll('.entry');
+
+    if (currentEntries.length > 0) {
+        localStorage.setItem('dailyTimes', JSON.stringify(dailyTimes));
+    }
+    else {
+        dailyTimes = [0, 0, 0, 0, 0, 0, 0];
+        localStorage.setItem('dailyTimes', JSON.stringify(dailyTimes));
+    }
 }
 
 function LoadTime() {
@@ -301,10 +316,14 @@ const dataChart = new Chart(ctx, {
         datasets: [{
             label: 'Hours Worked',
             data: dailyTimes,
-            borderWidth: 1
+            borderWidth: 1,
+            backgroundColor: colors,
         }]
     },
     options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        resizeDelay: 0,
         scales: {
             y: {
                 beginAtZero: true
@@ -312,3 +331,7 @@ const dataChart = new Chart(ctx, {
         }
     }
 });
+
+window.addEventListener('resize', () => {
+    dataChart.resize();
+})

@@ -5,10 +5,63 @@
     font-family: Arial, Helvetica, sans-serif;
 } 
 
+body {
+    background-color: var(--background);
+}
+
+button {
+    cursor: pointer;
+}
+
 input::-webkit-outer-spin-button,
 input::-webkit-innter-spin-button {
     -webkit-appearance: none;
     margin: 0;
+}
+
+:root[data-theme="dark"] {
+    --background: #1C1F26;
+    --surface: #262A33;
+    --elevated-card: #2F3440;
+    --text-primary: #EAEAF0;
+    --text-secondary: #B4B8C2;
+    --text-muted: #8A8F9C;
+    --border: #3A3F4B;
+
+    --button-primary: #7AA2F7;
+    --button-primary-hover: #6286E5;
+    --button-secondary: #3E4453;
+    --button-secondary-hover: #4A5164;
+    --button-border: #8FAEFF;
+    --secondary-button-border: #6B7280;
+
+    --input-background: #2A2F3A;
+    --input-hover: #353B4A;
+    --focus-ring: #A6C8FF;
+
+    --progress-fill: #7AA2F7;
+    --progress-background: #343A48;
+}
+
+:root[data-theme="light"] {
+    --background: #F6F3EE;
+    --surface: #FFFFFF;
+    --elevated-card: #FAF7F2;
+    --text-primary: #2B2B2B;
+    --text-secondary: #5E5E5E;
+    --text-muted: #8A8A8A;
+    --border: #E3DED6;
+
+    --button-primary: #4F6D7A;
+    --button-primary-hover: #3E5964;
+    --button-secondary: #E2D7C9;
+    --button-secondary-hover: #D5C7B5;
+
+    --input-background: #FFFFFF;
+    --input-hover: #F0ECE5;
+    --focus-ring: #A7C7E7;
+    --progress-fill: #4F6D7A;
+    --progress-background: #E6E1D8;
 }
 
 input[type=number] {
@@ -16,8 +69,24 @@ input[type=number] {
     appearance: textfield;
 }
 
-header h1 {
-    display: inline-block;
+header h2 {
+    font-size: clamp(1rem, calc(0.75rem + 1vw), 2.5rem);
+    padding: 0.5em;
+    color: var(--text-primary);
+}
+
+#progress-data h3 {
+    font-size: clamp(1rem, calc(0.5rem + 1vw), 2rem);
+    color: var(--text-primary);
+}
+.progress-label {
+    color: var(--text-secondary);
+    font-size: clamp(1rem, calc(0.5rem + 1vw), 2rem);
+}
+progress {
+    border-radius: 20px;
+    background-color: var(--progress-background);
+    accent-color: var(--progress-fill);
 }
 
 @media (min-width: 300px) {
@@ -88,7 +157,188 @@ header h1 {
        flex-direction: column;
        align-items: center;
        margin-top: 0.5em;
+       margin-bottom: 1em;
+       border: 2px solid black;
+       width: 95%;
+       border-radius: 5px;
+       margin-left: auto;
+       margin-right: auto;
+       padding: 0.5em;
+       background-color: var(--surface);
+   }
+   #progress-data h3 {
+       margin-top: 0.5em;
        margin-bottom: 0.5em;
    }
 
+   #entry-children {
+       display: flex;
+       flex-direction: column;
+       justify-content: center;
+       align-items: center;
+   }
+    #add-entry {
+        padding: 0.5em;
+        margin-top: 1em;
+        background-color: var(--button-primary);
+        border-radius: 10px;
+        color: var(--text-primary);
+        font-weight: bold;
+        padding-left: 1em;
+        padding-right: 1em;
+        width: 25%;
+        border: 5px solid var(--button-border);
+    }
+    #add-entry:hover {
+        background-color: var(--button-primary-hover);
+    }
+    #incentive-text {
+        text-align: center;
+    }
+
+    .work-entry-visible {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .work-entry-hidden {
+        display: none;
+    }
+    .work-entry-visible label {
+        padding-top: 1em;
+        padding-bottom: 0.5em;
+        color: var(--text-primary);
+    }
+    .work-entry-visible input {
+        text-align: center;
+        padding: 1em;
+        background-color: var(--input-background);
+        border: 4px solid;
+        border-color: var(--border);
+        color: var(--text-muted);
+    }
+    .work-entry-visible button {
+        margin-top: 1em;
+        margin-bottom: 1em;
+        padding: 1em;
+        width: 50%;
+        background-color: var(--button-secondary);
+        color: var(--text-secondary);
+        border: 5px solid var(--secondary-button-border);
+        border-radius: 5px;
+    }
+    .work-entry-visible button:hover {
+        background-color: var(--button-secondary-hover);
+    }
+    #goal-time-entry-section {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+    }
+    #goal-time-entry-section label {
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+    #goal-time-entry-section input {
+        width: 20%;
+        text-align: center;
+    }
+
+    #work-entries {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        align-items: center;
+        width: 100%;
+        height: fit-content;
+        min-height: 2em;
+        margin-top: 0.5em;
+        background-color: var(--surface);
+    }
+    #work-entries * {
+        background-color: var(--elevated-card);
+        color: var(--text-secondary);
+    }
+    #entry-children {
+        border: 2px solid black;
+        border-radius: 5px;
+        width: 95%;
+        margin-left: auto;
+        margin-right: auto;
+        background-color: var(--surface);
+    }
+    #work-entries div {
+        padding: 1em;
+        margin: 0.5em;
+        border: 2px solid var(--border);
+        border-radius: 5px;
+        width: 7em;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    #work-entries p {
+        font-weight: bold;
+        padding: 0.2em;
+        text-align: center;
+        border-radius: 5px;
+        width: 100%;
+    }
+    #work-entries button {
+        margin-top: 0.5em;
+        border-radius: 10px;
+        padding: 0.3em;
+        background-color: var(--button-secondary);
+        border: 5px solid var(--border);
+    }
+    #work-entries button:hover {
+        background-color: var(--button-secondary-hover);
+    }
+    
+    #canvas-container {
+        border: 2px solid black;
+        border-radius: 5px;
+        margin-left: auto;
+        margin-right: auto;
+        width: 95%;
+        height: 15em;
+        margin-top: 1em;
+        position: relative;
+        background-color: var(--surface);
+    }
+    #bar-graph {
+        margin-left: auto;
+        margin-right: auto;
+        width: 100% !important;
+        height: 100% !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #work-entries {
+        justify-content: center;
+    }
+
+    #canvas-container {
+        height: 25em;
+        width: 75%;
+    }
+    
+    #entry-children {
+        width: 75%;
+    }
+
+    #progress-data {
+        width: 75%;
+    }
 }

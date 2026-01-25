@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,53 +8,51 @@
     </head>
     <body>
         <header id="general-info">
-            <div id="welcome-section">
-                <h1 id="welcome-message">Welcome </h1>
-                <input id="name" value="User">
-            </div>
             <h2 id="days-left">There are x Days Left in the Week</h2>
         </header>
 
         <main>
-            <h3 id="goal-entry-text">You have not yet entered a goal for this week!</h3>
             <div id="progress-data">
-                <label id="current-progress">0%</label>
+                <h3 id="goal-entry-text">You have not yet entered a goal for this week!</h3>
+                <label class="progress-label" id="current-progress">0%</label>
                 <progress id="goal-progress" value="0" max="100"></progress>
-                <label id="time-left">0h 0m Left</label>
-            </div>
-
-            <h3 id="incentive-text">What you're working towards: </h3>
-
-            <form id="goal-entry" class="goal-entry-visible">
-                <label id="project-label" for="project-name">Project Name (optional)</label>
-                <input type="text" id="project-name" name="projectname" placeholder="optional">
-                <div id="time-entry-section">
-                    <label id="goal-label" for="goal-time">Goal Time (Hours, Minutes)</label>
-                    <input type="number" id="goal-time" placeholder="hours" name="goaltime" min="0">
-                    <input type="number" id="goal-minutes" placeholder="minutes" name="goalminutes" min="0">
+                <label class="progress-label" id="time-left">0h 0m Left</label>
+                <h3 id="incentive-text">What you're working towards: </h3>
+                <form id="goal-entry" class="goal-entry-visible">
+                    <label id="project-label" for="project-name">Project Name (optional)</label>
+                    <input type="text" id="project-name" name="projectname" placeholder="optional">
+                    <div id="time-entry-section">
+                        <label id="goal-label" for="goal-time">Goal Time (Hours, Minutes)</label>
+                        <input type="number" id="goal-time" placeholder="hours" name="goaltime" min="0">
+                        <input type="number" id="goal-minutes" placeholder="minutes" name="goalminutes" min="0" max="59">
                 </div>
-                <label id="incentive-label" for="incentive-input">Set Incentive (optional)</label>
+                <label  id="incentive-label" for="incentive-input">Set Incentive (optional)</label>
                 <input type="text" id="incentive-input" placeholder="Rest Day,Small Purchase,etc" name="incentiveinput">
                 <button type="submit" id="submit-button">Submit</button>
             </form>
+            </div>
 
-            <form id="work-entry">
-                <label id="title-label" for="entry-title">Entry Title</label>
-                <input type="text" id="entry-title" name="entrytitle" placeholder="optional">
-                <label id="description-label" for="description">Description</label>
-                <textarea id="description" name="description" placeholder="optional"></textarea>
-                <label id="time-label" for="time-entry">Enter Time Worked</label>
-                <input type="number" id="time-entry" name="timeentry" min="1" required placeholder="hours">
-                <input type="number" id="time-minutes" name="timeminutes" min="0" placeholder="minutes">
-                <button type="submit" id="entry-submit">Submit</button>
-            </form>
 
-            <button id="add-entry" onclick="ToggleEntryForm()">+</button>
 
-            <button id="reset-button" onclick="ResetPage()">Reset Page</button>
+
+            <div id="entry-children">
+
+                <button id="add-entry" onclick="ToggleEntryForm()">Add Work Entry</button>
+                <form id="work-entry" class="work-entry-hidden">
+                    <div id="goal-time-entry-section">
+                        <label id="entry-label" for="timeentry">Entry Time (Hours, Minutes)</label>
+                        <input type="number" id="time-entry" name="timeentry" min="1" required placeholder="hours">
+                        <input type="number" id="time-minutes" name="timeminutes" min="0" max="59" placeholder="minutes">
+                    </div>
+                    <button type="submit" id="entry-submit">Submit</button>
+                </form>
+                <div id="work-entries"></div>
+            </div>
 
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-            <canvas id="bar-graph"></canvas>
+            <div id="canvas-container">
+                <canvas id="bar-graph"></canvas>
+            </div>
         </main>
 
         <script src="script.js"></script>
